@@ -1,0 +1,446 @@
+我将先记录实现这个页面的分步骤 TODO 清单，然后生成完整单文件 HTML（含样式与脚本）。
+
+已创建 5 个待办事项
+
+已记录任务清单；下一步我将直接生成包含所有样式与交互的单文件 HTML，代码如下：
+
+```html
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ECI Insurance — 为您的未来保驾护航</title>
+  <style>
+    :root{
+      --deep-blue:#1a3a5c;
+      --white:#ffffff;
+      --gold:#c9a96e;
+      --max-width:1200px;
+      --shadow: 0 4px 10px rgba(26,58,92,0.08);
+      --card-radius:12px;
+      --nav-height:72px;
+    }
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{
+      margin:0;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+      color:var(--deep-blue);
+      background: #f7f8fa;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Centered container with max width */
+    .container{
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:0 24px;
+    }
+
+    /* Hero (first block) */
+    .hero{
+      width:100%;
+      height:600px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      color:var(--white);
+      overflow:hidden;
+      background: linear-gradient(180deg, #e8e9eb 0%, #d9dadc 100%);
+      /* simulate gray placeholder with subtle pattern */
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(0,0,0,0.03) 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 80%, rgba(0,0,0,0.03) 0 2px, transparent 3px);
+      opacity:0.45;
+      mix-blend-mode:multiply;
+    }
+    .hero-inner{
+      position:relative;
+      text-align:center;
+      width:100%;
+      max-width:900px;
+      padding:32px;
+    }
+    .hero h1{
+      margin:0 0 12px;
+      font-size:44px;
+      font-weight:700;
+      color:var(--white);
+      text-shadow: 0 4px 18px rgba(0,0,0,0.25);
+      letter-spacing:0.2px;
+    }
+    .hero p{
+      margin:0 0 20px;
+      font-size:18px;
+      color:rgba(255,255,255,0.95);
+    }
+    .btn{
+      display:inline-block;
+      padding:12px 20px;
+      border-radius:8px;
+      font-weight:600;
+      cursor:pointer;
+      border:none;
+      text-decoration:none;
+    }
+    .btn-gold{
+      background:var(--gold);
+      color:var(--deep-blue);
+      box-shadow: 0 6px 18px rgba(201,169,110,0.18);
+    }
+
+    /* Navigation bar (second block - below hero) */
+    nav{
+      position:sticky;
+      top:0;
+      z-index:50;
+      background:var(--white);
+      box-shadow:var(--shadow);
+      height:var(--nav-height);
+      display:flex;
+      align-items:center;
+      border-bottom:1px solid rgba(26,58,92,0.04);
+    }
+    .nav-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      width:100%;
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:0 24px;
+    }
+    .logo{
+      font-weight:700;
+      color:var(--deep-blue);
+      font-size:20px;
+      letter-spacing:0.6px;
+    }
+    .menu{
+      display:flex;
+      gap:20px;
+      align-items:center;
+      list-style:none;
+      margin:0;
+      padding:0;
+    }
+    .menu a{
+      color:var(--deep-blue);
+      text-decoration:none;
+      padding:8px 10px;
+      border-radius:6px;
+      font-weight:600;
+      font-size:15px;
+    }
+    .menu a:hover{background:rgba(26,58,92,0.04);}
+
+    /* Sections */
+    section{
+      padding:60px 0;
+      text-align:center;
+    }
+    h2.section-title{
+      margin:0 0 28px;
+      font-size:28px;
+      color:var(--deep-blue);
+    }
+
+    /* Core advantages (third block) */
+    .advantages{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:20px;
+      align-items:stretch;
+    }
+    .adv-card{
+      background:var(--white);
+      border-radius:var(--card-radius);
+      padding:22px;
+      box-shadow: 0 6px 18px rgba(10,20,30,0.04);
+      text-align:center;
+    }
+    .adv-icon{
+      width:72px;
+      height:72px;
+      margin:0 auto 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:linear-gradient(180deg, rgba(26,58,92,0.06), rgba(26,58,92,0.03));
+      font-size:30px;
+    }
+    .adv-title{font-weight:700; margin:8px 0; color:var(--deep-blue);}
+    .adv-desc{color:#556b85; font-size:14px; line-height:1.5;}
+
+    /* Team (fourth block) */
+    .team-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:20px;
+    }
+    .person{
+      background:var(--white);
+      border-radius:var(--card-radius);
+      padding:18px;
+      box-shadow: 0 6px 18px rgba(10,20,30,0.04);
+      text-align:center;
+    }
+    .photo{
+      width:100px;
+      height:100px;
+      margin:0 auto 12px;
+      border-radius:50%;
+      background: #e9eaec;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:36px;
+    }
+    .person-name{font-weight:700; color:var(--deep-blue); margin-bottom:6px;}
+    .person-role{color:#6b8196; font-size:14px;}
+
+    /* Clients (fifth block) */
+    .clients-grid{
+      display:grid;
+      grid-template-columns:repeat(6,1fr);
+      gap:16px;
+      align-items:center;
+      justify-items:center;
+    }
+    .client{
+      width:160px;
+      height:60px;
+      background:#e1e3e6;
+      border-radius:8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#6b6f74;
+      font-weight:600;
+      font-size:14px;
+    }
+
+    /* Footer CTA + contact (sixth block) */
+    .footer-cta{
+      background:var(--deep-blue);
+      color:var(--white);
+      padding:40px 0;
+      border-radius:12px;
+    }
+    .footer-cta h3{margin:0 0 12px; font-size:22px;}
+    .footer-cta .btn-gold{background:var(--gold); color:var(--deep-blue); margin-top:10px;}
+
+    .site-footer{
+      margin-top:18px;
+      color:rgba(255,255,255,0.9);
+      font-size:14px;
+    }
+    .footer-row{
+      margin-top:12px;
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .footer-row span{opacity:0.95;}
+
+    /* Responsive: on small screens, cards -> 2 columns */
+    @media (max-width:1000px){
+      .advantages{grid-template-columns:repeat(2,1fr);}
+      .team-grid{grid-template-columns:repeat(2,1fr);}
+      .clients-grid{grid-template-columns:repeat(3,1fr);}
+    }
+    @media (max-width:600px){
+      .hero{height:520px;}
+      .hero h1{font-size:32px;}
+      .advantages{grid-template-columns:repeat(2,1fr);}
+      .team-grid{grid-template-columns:repeat(2,1fr);}
+      .clients-grid{grid-template-columns:repeat(2,1fr);}
+      .menu{gap:12px; font-size:14px;}
+      .client{width:140px;}
+    }
+    @media (max-width:420px){
+      .container{padding:0 16px;}
+      .hero h1{font-size:26px;}
+      .clients-grid{grid-template-columns:repeat(1,1fr);}
+      .menu{display:flex; flex-wrap:wrap; gap:10px;}
+    }
+
+    /* Utility */
+    .spacer{height:24px;}
+  </style>
+</head>
+<body>
+  <!-- Hero (第一块) -->
+  <header id="home" class="hero" role="banner" aria-label="Hero 区域">
+    <div class="hero-inner container">
+      <h1>为您的未来保驾护航</h1>
+      <p>专业保险服务，守护您和家人的每一个明天</p>
+      <a href="#contact" class="btn btn-gold" id="hero-cta">获取免费方案</a>
+    </div>
+  </header>
+
+  <!-- Navigation (第二块：粘性，位于 hero 之后) -->
+  <nav aria-label="主导航">
+    <div class="nav-inner container">
+      <div class="logo">ECI Insurance</div>
+      <ul class="menu" role="menubar">
+        <li role="none"><a role="menuitem" href="#home">首页</a></li>
+        <li role="none"><a role="menuitem" href="#services">我们的服务</a></li>
+        <li role="none"><a role="menuitem" href="#about">关于我们</a></li>
+        <li role="none"><a role="menuitem" href="#contact">联系我们</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Advantages (第三块) -->
+    <section id="services" class="container" aria-labelledby="services-title">
+      <h2 id="services-title" class="section-title">为什么选择我们</h2>
+      <div class="advantages" role="list">
+        <article class="adv-card" role="listitem">
+          <div class="adv-icon">🧑‍💼</div>
+          <div class="adv-title">专业团队</div>
+          <div class="adv-desc">多年行业经验，提供量身定制的保障方案，贴心服务。</div>
+        </article>
+        <article class="adv-card" role="listitem">
+          <div class="adv-icon">⚡</div>
+          <div class="adv-title">快速理赔</div>
+          <div class="adv-desc">高效理赔流程，简化手续，帮助客户及时获得赔付。</div>
+        </article>
+        <article class="adv-card" role="listitem">
+          <div class="adv-icon">🔍</div>
+          <div class="adv-title">透明条款</div>
+          <div class="adv-desc">条款清晰明了，无隐性费用，确保客户权益可读可查。</div>
+        </article>
+        <article class="adv-card" role="listitem">
+          <div class="adv-icon">🕒</div>
+          <div class="adv-title">24小时服务</div>
+          <div class="adv-desc">全天候客户支持，随时响应您的咨询与需求。</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Team (第四块) -->
+    <section id="about" class="container" aria-labelledby="team-title">
+      <h2 id="team-title" class="section-title">我们的核心团队</h2>
+      <div class="team-grid" role="list">
+        <div class="person" role="listitem">
+          <div class="photo">👨‍💼</div>
+          <div class="person-name">张三</div>
+          <div class="person-role">CEO</div>
+        </div>
+        <div class="person" role="listitem">
+          <div class="photo">👩‍💻</div>
+          <div class="person-name">李四</div>
+          <div class="person-role">CTO</div>
+        </div>
+        <div class="person" role="listitem">
+          <div class="photo">🧮</div>
+          <div class="person-name">王五</div>
+          <div class="person-role">精算师</div>
+        </div>
+        <div class="person" role="listitem">
+          <div class="photo">🤝</div>
+          <div class="person-name">赵六</div>
+          <div class="person-role">客户总监</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clients (第五块) -->
+    <section class="container" aria-labelledby="clients-title">
+      <h2 id="clients-title" class="section-title">他们信任我们</h2>
+      <div class="clients-grid" role="list" aria-label="客户 Logo 列表">
+        <div class="client" role="listitem">Client Logo</div>
+        <div class="client" role="listitem">Client Logo</div>
+        <div class="client" role="listitem">Client Logo</div>
+        <div class="client" role="listitem">Client Logo</div>
+        <div class="client" role="listitem">Client Logo</div>
+        <div class="client" role="listitem">Client Logo</div>
+      </div>
+    </section>
+
+    <!-- Footer CTA + Contact (第六块) -->
+    <section id="contact" class="container">
+      <div class="footer-cta">
+        <div class="container" style="max-width:900px;">
+          <h3>立即加入我们，获取专属保险方案</h3>
+          <p style="margin:8px 0 0; color:rgba(255,255,255,0.9)">我们的顾问会在24小时内与您联系，提供免费方案咨询。</p>
+          <a href="#contact" class="btn btn-gold" style="margin-top:18px; display:inline-block;">联系我们</a>
+
+          <div class="site-footer">
+            <div class="footer-row" style="margin-top:18px;">
+              <span>地址：某某市金融街 123 号</span>
+              <span>|</span>
+              <span>电话：400-123-4567</span>
+              <span>|</span>
+              <span>邮箱：contact@eci-insure.com</span>
+              <span>|</span>
+              <span>社交：📘 📸 🐦</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="spacer"></div>
+  </main>
+
+  <script>
+    // Smooth scroll with offset to account for sticky nav height
+    (function(){
+      const nav = document.querySelector('nav');
+      const navHeight = nav ? nav.offsetHeight : 72;
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{
+        a.addEventListener('click', function(e){
+          const targetId = this.getAttribute('href').slice(1);
+          if(!targetId) return;
+          const targetEl = document.getElementById(targetId);
+          if(targetEl){
+            e.preventDefault();
+            const rect = targetEl.getBoundingClientRect();
+            const top = rect.top + window.scrollY - navHeight - 12; // slight padding
+            window.scrollTo({top, behavior:'smooth'});
+            // update hash without jumping
+            history.replaceState(null, '', '#'+targetId);
+          }
+        });
+      });
+
+      // Optional: highlight menu on scroll (basic)
+      const sections = Array.from(document.querySelectorAll('main section, header'));
+      const menuLinks = Array.from(document.querySelectorAll('.menu a'));
+      function onScroll(){
+        const scrollPos = window.scrollY + navHeight + 20;
+        let currentId = 'home';
+        for(const s of sections){
+          if(s.offsetTop <= scrollPos){
+            currentId = s.id || currentId;
+          }
+        }
+        menuLinks.forEach(a=>{
+          if(a.getAttribute('href') === '#'+currentId){
+            a.style.opacity = '1';
+          }else{
+            a.style.opacity = '0.7';
+          }
+        });
+      }
+      window.addEventListener('scroll', onScroll, {passive:true});
+      onScroll();
+    })();
+  </script>
+</body>
+</html>
+```
